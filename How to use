@@ -1,0 +1,4 @@
+1.Make sure the code is implemented in a compiler capable of running pythin 3.11
+2.Make sure the csv file is in the same environment as the compiler
+3.make sure the file name is the same as the file name in the code on the line where it has  "pd.read_csv()"
+4.The program will be ready to be ran
