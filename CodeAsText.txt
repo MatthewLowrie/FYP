@@ -1,0 +1,1422 @@
+import pandas as pd
+import matplotlib.pyplot as plt; plt.rcdefaults()
+import numpy as np
+import matplotlib.pyplot as plt
+from tabulate import tabulate
+import seaborn as sns
+from IPython.display import clear_output
+import time
+import networkx as nx
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LinearRegression
+
+
+#import the libraries needed
+
+#read the csv file 
+Data = pd.read_csv('/content/fyp dataset.csv')
+
+
+#create a dataframe so we can drop the columns and rows we will not be using
+Data = pd.DataFrame(Data)
+
+#drop every bit of data we will not be using
+data = Data.drop(['ShoFK'],axis = 1)
+data = data.drop(['PKatt'],axis = 1)
+data = data.drop(['PasTotCmp'],axis = 1)
+data = data.drop(['PasTotDist'],axis = 1)
+data = data.drop(['PasTotPrgDist'],axis = 1)
+data = data.drop(['PasShoCmp'],axis = 1)
+data = data.drop(['PasMedCmp'],axis = 1)
+data = data.drop(['PasLonCmp'],axis = 1)
+data = data.drop(['PPA'],axis = 1)
+data = data.drop(['PasProg'],axis = 1)
+data = data.drop(['PasLive'],axis = 1)
+data = data.drop(['PasDead'],axis = 1)
+data = data.drop(['PasFK'],axis = 1)
+data = data.drop(['PasPress'],axis = 1)
+data = data.drop(['Sw'],axis = 1)
+data = data.drop(['CkIn'],axis = 1)
+data = data.drop(['CkOut'],axis = 1)
+data = data.drop(['CkStr'],axis = 1)
+data = data.drop(['PasGround'],axis = 1)
+data = data.drop(['PasLow'],axis = 1)
+data = data.drop(['PasHigh'],axis = 1)
+data = data.drop(['PaswLeft'],axis = 1)
+data = data.drop(['PaswRight'],axis = 1)
+data = data.drop(['PaswHead'],axis = 1)
+data = data.drop(['TI'],axis = 1)
+data = data.drop(['PaswOther'],axis = 1)
+data = data.drop(['PasOff'],axis = 1)
+data = data.drop(['PasOut'],axis = 1)
+data = data.drop(['PasInt'],axis = 1)
+data = data.drop(['PasBlocks'],axis = 1)
+data = data.drop(['ScaSh'],axis = 1)
+data = data.drop(['ScaFld'],axis = 1)
+data = data.drop(['ScaDef'],axis = 1)
+data = data.drop(['GcaPassLive'],axis = 1)
+data = data.drop(['GcaPassDead'],axis = 1)
+data = data.drop(['GcaSh'],axis = 1)
+data = data.drop(['GcaFld'],axis = 1)
+data = data.drop(['GcaDef'],axis = 1)
+data = data.drop(['TklDri'],axis = 1)
+data = data.drop(['TklDriAtt'],axis = 1)
+data = data.drop(['Press'],axis = 1)
+data = data.drop(['PresSucc'],axis = 1)
+data = data.drop(['PresDef3rd'],axis = 1)
+data = data.drop(['PresMid3rd'],axis = 1)
+data = data.drop(['PresAtt3rd'],axis = 1)
+data = data.drop(['Blocks'],axis = 1)
+data = data.drop(['BlkSh'],axis = 1)
+data = data.drop(['Tkl+Int'],axis = 1)
+data = data.drop(['Clr'],axis = 1)
+data = data.drop(['Touches'],axis = 1)
+data = data.drop(['TouDefPen'],axis = 1)
+data = data.drop(['TouDef3rd'],axis = 1)
+data = data.drop(['TouMid3rd'],axis = 1)
+data = data.drop(['TouAtt3rd'],axis = 1)
+data = data.drop(['TouAttPen'],axis = 1)
+data = data.drop(['TouLive'],axis = 1)
+data = data.drop(['DriSucc'],axis = 1)
+data = data.drop(['DriAtt'],axis = 1)
+data = data.drop(['DriPast'],axis = 1)
+data = data.drop(['DriMegs'],axis = 1)
+data = data.drop(['Carries'],axis = 1)
+data = data.drop(['CarTotDist'],axis = 1)
+data = data.drop(['CarPrgDist'],axis = 1)
+data = data.drop(['CarMis'],axis = 1)
+data = data.drop(['Car3rd'],axis = 1)
+data = data.drop(['CPA'],axis = 1)
+data = data.drop(['RecTarg'],axis = 1)
+data = data.drop(['Rec'],axis = 1)
+data = data.drop(['Rec%'],axis = 1)
+data = data.drop(['RecProg'],axis = 1)
+data = data.drop(['2CrdY'],axis = 1)
+data = data.drop(['Off'],axis = 1)
+data = data.drop(['Crs'],axis = 1)
+data = data.drop(['PKwon'],axis = 1)
+data = data.drop(['PKcon'],axis = 1)
+data = data.drop(['OG'],axis = 1)
+data = data.drop(['Recov'],axis = 1)
+data = data.drop(['AerWon'],axis = 1)
+data = data.drop(['AerLost'],axis = 1)
+
+
+
+
+
+#'','','','','','','%','','','','','','','','','','AerLost'], axis = 1)##
+
+##info = data[['Player','Nation','Pos','Squad','Comp','Age','Born']]
+#attack = data[['Player','Goals','Shots','SoT','SoT%','G/Sh','G/SoT']]
+
+defence = []
+midfield = []
+attack = []
+count = 0
+for a in data:
+  if data.iloc[count,3] == "DF":
+    defence.append(data.iloc[count,:])
+  elif data.iloc[count,3] == "MF":
+    midfield.append(data.iloc[count,:])
+  elif data.iloc[count,3] == "FW":
+    attack.append(data.iloc[count,:])
+  count+=1
+
+
+def intro():
+  print("#" * 53)
+  print("#" + " " * 51 + "#")
+  print("#" + " " * 10 + "Welcome to the FootData Program" + " " * 10 + "#")
+  print("#" + " " * 51 + "#")
+  print("#" * 53)
+  print("\n")
+  print("No personal data collected in this program will be stored when the program is closed, or shared with anyone in compliance with (GDPR) (CCPA) (COPPA)")
+
+  name = input("Please enter your name: ")
+  print("\n")
+  print("Hello, {}! I am glad you are here.".format(name))
+  print("\n")
+  print("This program is designed to perform complex tasks to help provide an in depth analysis of the football players within the dataset.")
+  print("""
+    Within this program you will be able to analyse a players football stats from the 2021/22 season from the top 5 leagues:
+    -Premier League (England)
+    -Serie A (Italy)
+    -Bundesliga (Germany)
+    -Ligue 1 (France)
+    -La Liga (Spain)
+    """)
+  print("It can handle a wide range of inputs and provide accurate outputs.")
+  print("Before we get started, here are some important instructions:")
+  print("\n")
+  print("1. Please enter the inputs in the correct format.")
+  print("2. Do not enter any invalid characters.")
+
+
+  statlist = str(input("Would you like to see a list of all the stats that have been analysed? (y for yes, n for no)"))
+  if (statlist == "Yes") or (statlist ==  "Y") or (statlist ==  "y") or (statlist == "yes"):
+    print("""
+    
+
+    
+    The Stats that you will be able to analyse are:
+    Rk : Rank
+    Player : Player Name
+    Nation : Player Nation
+    Pos : Player Position
+    Squad : Player's Team
+    Comp : Player's Competition
+    Age : Player Age
+    Born : Year Of Birth
+    MP : Matches Played
+    Starts : Matches Started
+    Min : Minutes Played
+    90s : Minutes Played / 90
+    Goals : Goals Scored / 90
+    Shots : Total Shots
+    SoT : Shots on Target
+    SoT% : Shots on Target %
+    G/Sh : Goals per Shot
+    G/SoT : Goals per Shot on Target
+    ShoDist : Average distance, in yards, from goal of all shots taken (Does not include penalty kicks)
+    ShoPK : Penalty kicks made
+    PasTotAtt : Passes attempted
+    PasTotCmp% : Pass completion percentage
+    PasShoAtt : Passes attempted (Passes between 5 and 15 yards)
+    PasShoCmp% : Pass completion percentage (Passes between 5 and 15 yards)
+    PasMedAtt : Passes attempted (Passes between 15 and 30 yards)
+    PasMedCmp% :  Pass completion percentage (Passes between 15 and 30 yards)
+    PasLonAtt : Passes attempted (Passes longer than 30 yards)
+    PasLonCmp% : Pass completion percentage (Passes longer than 30 yards)
+    Assists : Amount of Assissts
+    PasAss : Passes that directly lead to a shot (assisted shots)
+    Pas3rd : Completed passes that enter the 1/3 of the pitch closest to the goal
+    CrsPA : Completed crosses into the 18-yard box
+    PasAtt : Passes attempted
+    TB : Completed pass sent between back defenders into open space
+    PasCrs : Crosses
+    CK : Corner Kicks
+    PasCmp : Passes Completed
+    SCA : Shot creating Actions
+    ScaPassLive : Completed live-ball passes that lead to a shot attempt
+    ScaPassDead : Completed dead-ball passes that lead to a shot attempt
+    ScaDrib : Successful dribbles that lead to a shot attempt
+    GCA : Goal-creating actions
+    GcaDrib : Successful dribbles that lead to a goal
+    Tkl : Number of players tackled
+    TklWon : Tackles in which the tackler's team won possession of the ball
+    TklDef3rd : Tackles in defensive 1/3
+    TklMid3rd : Tackles in middle 1/3
+    TklAtt3rd : Tackles in attacking 1/3
+    TklDri% : Percentage of dribblers tackled
+    TklDriPast : Number of times dribbled past by an opposing player
+    Press% : Percentage of time the squad gained possession withing five seconds of applying pressure
+    BlkShSv : Number of times blocking a shot that was on target, by standing in its path
+    BlkPass : Number of times blocking a pass by standing in its path
+    Int : Interceptions
+    Err : Mistakes leading to an opponent's shot
+    DriSucc% : Percentage of dribbles completed successfully
+    CarProg : Carries that move the ball towards the opponent's goal at least 5 yards, or any carry into the penalty area
+    CarDis : Number of times a player loses control of the ball after being tackled by an opposing player
+    CrdY : Yellow cards
+    CrdR : Red cards
+    Fls : Fouls committed
+    Fld : Fouls drawn
+    TklW : Tackles in which the tackler's team won possession of the ball
+    AerWon% : Percentage of aerials won
+    
+    
+  
+  
+  
+    """)
+
+  else:
+     print("")
+
+ 
+
+
+# Define a function to ask the user for their choice
+def Ask_Choice():
+  print("""
+    We have a few options for the comparison features, the options are:
+    1. Comparison Options
+      -Compare your player's stats to the average in their position
+      -Compare your team's stats to the rest of your league
+      -Compare how different ages affect a player's performance
+      -Compare how different leagues have different performances
+      -Compare Players
+
+    2. Analysis Options
+      -Dependency heat-map and network map
+      -Graphical visualization options
+      -View all the raw data for multiple players
+      -Player Scouting system
+      -PCA Model
+      -Linear Regression Predictor
+
+    3. Use Cases (reccomendations on how to use the program)
+    4. Extras
+    5. List of all functions
+    6. Create shortlist of players
+    """)
+    
+  # Get user input for the option they want to choose
+  while True:
+        try:
+            option = int(input("What option would you like to choose? Enter the corresponding number: "))
+            if option in [1, 2, 3, 4, 5, 6]:
+                break
+            else:
+                print("Invalid input. Please enter a number between 1 and 5.")
+        except ValueError:
+            print("Invalid input. Please enter a number between 1 and 5.")
+            
+  # Check user input and call corresponding function
+  if option == 1:
+      print("You have chosen the Comparison Options.")
+      Comparison_Options()
+
+  elif option == 2:
+      print("You have chosen the Analysis Options.")
+      Analysis_Options()
+
+  elif option == 3:
+      print("You have chosen the Use Cases.")
+      Use_Cases()
+  elif option == 4:
+      Extras()
+  elif option == 5:
+      Func_List()
+  elif option == 6:
+      Shortlist()
+
+
+
+def Comparison_Options():
+    print("""
+    We have a few options for the comparison features, the options are:
+    1. Compare your player's stats to the average in their position
+    2. Compare your team's stats to the rest of your league
+    3. Compare how different ages affect a player's performance
+    4. Compare how different leagues have different performances
+    5. Compare Players
+    """)
+
+    # Get user input for the comparison option
+    while True:
+        try:
+            option = int(input("What option would you like to choose? Enter the corresponding number: "))
+            if option in [1, 2, 3, 4, 5]:
+                break
+            else:
+                print("Invalid input. Please enter a number between 1 and 5.")
+        except ValueError:
+            print("Invalid input. Please enter a number between 1 and 5.")
+
+    # Check user input and display corresponding message
+    if option == 1:
+        print("You have chosen to compare your player's stats to the average in their position.")
+        print("Loading...")
+        time.sleep(3)
+        Compare_Player_To_Average()
+
+    elif option == 2:
+        print("You have chosen to compare your team's stats to the rest of your league.")
+        print("Loading...")
+        time.sleep(3)
+        Compare_Team_To_League()
+
+    elif option == 3:
+        print("You have chosen to compare how different ages affect a player's performance.")
+        print("Loading...")
+        time.sleep(3)
+        Compare_Age_To_Performance()
+
+    elif option == 4:
+        print("You have chosen to compare how different leagues have different performances.")
+        print("Loading...")
+        time.sleep(3)
+        Compare_League_To_Performance()
+
+    elif option == 5:
+        print("You have chosen to compare different players and their performances.")
+        print("Loading...")
+        time.sleep(3)
+        ComparePlayers()
+
+
+
+
+
+
+def Analysis_Options():
+    print("""
+    For the analysis, we have a few options:
+    1. Dependency heat-map and network map
+    2. Graphical visualization options
+    3. View all the raw data for multiple players
+    4. Player Scouting system
+    5. PCA Model
+    6. Linear Regression Predictor
+    """)
+    #check if input id valid
+    while True:
+        try:
+            option = int(input("What option would you like to choose? Enter the corresponding number: "))
+            if option < 1 or option > 6:
+                print("Invalid input. Please enter a number between 1 and 5.")
+                continue
+            else:
+                break
+        except ValueError:
+            print("Invalid input. Please enter a number between 1 and 5.")
+    #call correct function for input
+    if option == 1:
+        print("You have chosen the dependency heat-map and network map option.")
+        print("Loading...")
+        time.sleep(3)
+        dependency()
+
+
+    elif option == 2:
+        print("You have chosen the graphical visualization option.")
+        print("Loading...")
+        time.sleep(3)
+        Graphs()
+
+
+    elif option == 3:
+        print("You have chosen the view all the raw data for multiple players option.")
+        Player_Raw_Data()
+
+
+    elif option == 4:
+        print("You have chosen the player scouting system option.")
+        print("Loading...")
+        time.sleep(3)
+        Find_A_Player()
+
+
+    elif option == 5:
+        print("You have chosen the PCA model option.")
+        print("Loading...")
+        time.sleep(3)
+        PCA()
+    
+    elif option == 6:
+        print("You have chosen the Linear Regression model option.")
+        print("Loading...")
+        time.sleep(3)
+        LR_Predict(data)
+
+
+
+def Use_Cases():
+
+  print("""
+  
+  For the use cases we have 3 potential users:
+
+  1.Players
+  2.Managers
+  3.Scouts
+  
+  
+  
+  
+  
+  """)
+  while True:
+        try:
+            option = int(input("What option would you like to choose? Enter the corresponding number: "))
+            if option in [1, 2, 3]:
+                break
+            else:
+                print("Invalid input. Please enter a number between 1 and 3.")
+        except ValueError:
+            print("Invalid input. Please enter a number between 1 and 3.")
+
+
+  if option == 1:
+    Use_Cases_Player()
+  elif option == 2:
+    Use_Cases_Manager
+  elif option == 3:
+    Use_Cases_Scout()
+
+def Extras():
+  print("""
+  
+  
+  The Regulations and laws that this project is in compliance with are: 
+
+
+  
+  General Data Protection Regulation (GDPR): The GDPR is a European Union regulation that sets out strict rules for the collection, storage, and processing of personal data. 
+  It applies to any organization that collects or processes data related to individuals in the EU, regardless of where the organization is based.
+
+    -To Learn more follow this link : https://gdpr-info.eu/
+
+
+
+  California Consumer Privacy Act (CCPA): The CCPA is a California state law that provides Californians with specific privacy rights related to their personal information. 
+  It requires businesses to provide clear and transparent information about their data collection practices and allows individuals to request that their data be deleted.
+
+    -To Learn more follow this link : https://www.cube.global/resource/the-california-consumer-privacy-act-ccpa-an-overview/?gclid=CjwKCAjwq-WgBhBMEiwAzKSH6NJU0O_Qz0RarzE7gENX3OfD1DQCw0ut8iviK5o5SwlH2YfWWTwyUxoCZzAQAvD_BwE
+
+  
+  How to use the data:
+
+  -When using the program, the contents must not be shared to external users
+  -The data must not be changed to false information
+
+  
+  Press any key then <ENTER> to proceed back to the main menu
+  
+  
+  """)
+  BACK = input()
+  if BACK == "":
+    Ask_Choice()
+  else:
+    Ask_Choice()
+    
+def Shortlist():
+
+  filename = 'playernames.txt'
+
+  # Create the file if it doesn't exist
+  with open(filename, 'a+') as f:
+      f.seek(0)
+      first_char = f.read(1)
+      if not first_char:
+          f.write("Names:\n")
+
+  # Ask the user for names to add
+  while True:
+      name = input("Enter a name to add (or 'q' to quit): ")
+      if name == 'q':
+          break
+      with open(filename, 'a') as f:
+          f.write(name + '\n')
+      print(f"{name} added to {filename}")
+
+  # Print out the names in the file
+  print(f"\nNames in {filename}:")
+  with open(filename) as f:
+      for line in f:
+          print(line.strip())
+
+  # Save changes to the file
+  print(f"\nSaving changes to {filename}...")
+  
+  
+  
+  
+
+
+
+
+
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+def Graphs():
+    # Prompt user for input
+    while True:
+        user_input = input("Enter player name(s) separated by commas: ")
+        # Split input string into a list of names
+        names = [name.strip() for name in user_input.split(",")]
+        # Check if names are present in the DataFrame
+        invalid_names = [name for name in names if name not in data['Player'].values]
+        if not invalid_names:
+            break
+        print("Invalid name(s):", ", ".join(invalid_names))
+        print("One or more of the names entered is not present in the DataFrame. Please enter valid names.")
+    
+    # Prompt user for input
+    while True:
+        user_input = input("Enter stat name(s) separated by commas: ")
+        # Split input string into a list of stats
+        stats = [name.strip() for name in user_input.split(",")]
+        # Check if stats are present in the DataFrame
+        invalid_stats = [stat for stat in stats if stat not in data.columns.values]
+        if not invalid_stats:
+            break
+        print("Invalid stat(s):", ", ".join(invalid_stats))
+        print("One or more of the stats entered is not present in the DataFrame. Please enter valid stats.")
+    
+    # Define a colormap based on the number of players
+    num_players = len(names)
+    cmap = plt.get_cmap('tab20')
+    colors = cmap(np.linspace(0, 1, num_players))
+    
+    for stat in stats:
+        values = []
+        for name in names:
+            search_value = name
+            search_column = "Player"
+            # find the index of the row where the search value is located
+            index = data.index[data[search_column] == search_value].tolist()[0]
+            column_name = stat
+            column_index = data.columns.get_loc(column_name)
+            values.append(data.iloc[index][column_index])
+        # Plot bar chart with appropriate colors
+        plt.bar(names, values, color=colors)
+        plt.title(stat)
+        plt.xticks(rotation=90)
+        plt.show()
+
+
+
+
+import pandas as pd
+from tabulate import tabulate
+
+def Player_Raw_Data():
+    """
+    Takes a pandas DataFrame as input and prompts the user for input string(s).
+    Finds the entire row(s) that match the input string(s) and prints them using the tabulate function.
+    """
+
+    df = data
+    
+    # Prompt user for input
+    while True:
+        user_input = input("Enter player name(s) separated by commas: ")
+        # Split input string into a list of names
+        names = [name.strip() for name in user_input.split(",")]
+        # Check if names are present in the DataFrame
+        invalid_names = [name for name in names if name not in data['Player'].values]
+        if not invalid_names:
+            break
+        print("Invalid name(s):", ", ".join(invalid_names))
+        print("One or more of the names entered is not present in the DataFrame. Please enter valid names.")
+    
+    # Find rows that match user input
+    matching_rows = pd.DataFrame()
+    for name in names:
+        rows = df[df.apply(lambda row: row.astype(str).str.contains(name, case=False).any(), axis=1)]
+        matching_rows = pd.concat([matching_rows, rows])
+    
+    # Print matching rows using tabulate
+    if not matching_rows.empty:
+        print(tabulate(matching_rows, headers='keys', tablefmt='psql'))
+    else:
+        print("No matching rows found.")
+
+
+
+# Import necessary libraries
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Define the ComparePlayers function
+def ComparePlayers():
+
+  # Prompt the user to enter one or more player names
+  while True:
+        user_input = input("Enter player name(s) separated by commas: ")
+        # Split input string into a list of names
+        names = [name.strip() for name in user_input.split(",")]
+        # Check if names are present in the DataFrame
+        invalid_names = [name for name in names if name not in data['Player'].values]
+        # If all names are valid, exit the loop
+        if not invalid_names:
+            break
+        # If one or more names are invalid, print an error message and prompt the user again
+        print("Invalid name(s):", ", ".join(invalid_names))
+        print("One or more of the names entered is not present in the DataFrame. Please enter valid names.")
+    
+  # Get a list of all column names in the DataFrame
+  column = list(data.columns.values)
+  # Create an empty list to store the data items to compare
+  DATA = []
+  # Prompt the user to enter the stats they would like to compare
+  while True:
+      user_input_data = input("Enter the stats you would like to compare (e.g SoT, Goals, Age) separated by commas: ")
+      # Split input string into a list of data items
+      DATA = [name.strip() for name in user_input_data.split(",")]
+      # Check if data items are present in the DataFrame
+      invalid_names = [name for name in DATA if name not in column]
+      # If all data items are valid, exit the loop
+      if not invalid_names:
+          break
+      # If one or more data items are invalid, print an error message and prompt the user again
+      print("Invalid data item(s):", ", ".join(invalid_names))
+      print("One or more of the data items entered is not present in the DataFrame. Please enter valid data items.")
+
+  # Loop over each data item to compare
+  for currentData in DATA:
+      # Get the index of the current data item in the DataFrame
+      index = column.index(currentData)
+      # Create empty lists to store player numbers and comparison values
+      pnums = []
+      comparison = []
+      # Loop over each player name and retrieve the corresponding value for the current data item
+      for player in names:
+          # Find the index of the player in the DataFrame
+          a = data.index[data['Player'] == player].tolist()[0]
+          pnums.append(a)
+          # Retrieve the value of the current data item for the player
+          comparison.append(data.iloc[a][index])
+      
+      # Determine the highest and lowest values for the current data item
+      highest = max(comparison)
+      lowest = min(comparison)
+
+      # Loop over each player again and print the highest and lowest values for the current data item
+      _count = 0
+      for MaxMin in comparison:
+          if MaxMin == highest:
+              print("{} had the highest stat in {} with the value of {} ".format(names[_count], currentData, highest))
+          elif MaxMin == lowest:
+              print("{} had the lowest stat in {} with the value of {} ".format(names[_count], currentData, lowest))
+          _count +=1
+
+      # Create a bar plot to visualize the performance of each player for the current data item
+      plt.figure(figsize=(8, 6))
+      plt.title(currentData)
+      sns.barplot(x=names, y=comparison)
+      plt.show()
+
+
+def Find_A_Player():
+
+  STATS = []  # empty list to store stats to search for
+  chosen = input("What Position would you like to search for?: (FW = Forward),(MF = Midfield),(DF = Defence), (<ENTER> = ALL) ")
+  
+  if chosen == "":
+    a = data  # if no position is chosen, search for all players
+  else:
+    condition = data['Pos'] == chosen  # search for players in the selected position
+    a = data[condition]
+  
+  # prompt user to search for players above average in certain stats
+  Y_OR_N = input("""
+  Now we will search for all players that are in the position you selected, 
+  you can also search for certain stats, would you like to look for players that are above average in certain stats?: (Y = yes, N = no)""")
+  
+  while Y_OR_N.lower() == "y":
+    STAT = input("enter what stats you would like to search for, press <ENTER> when done: ")
+    if STAT != "":
+      STATS.append(STAT)  # add stats to search for in the list
+    else: 
+      Y_OR_N = "n"  # if user presses <ENTER>, exit the loop
+  
+  # filter players based on chosen stats
+  for STAT in STATS:
+    a = a.loc[data[STAT] > a[STAT].mean()]
+  
+  # print mean of chosen stats
+  for i in STATS:
+    print(data[i].mean(), i)
+    
+
+
+  print("\n Players that match the search:  \n")
+  for STAT in STATS:
+    c = a.loc[data[STAT] > (a[STAT].mean() * 1)]
+  print(tabulate(c, headers='keys', tablefmt='psql'))  
+  # display the filtered data for top performers (20% higher than the rest of the players)
+  print("\n Top Performers (20% Higher than the rest of the players):  \n")
+  for STAT in STATS:
+    b = a.loc[data[STAT] > (a[STAT].mean() * 1.2)]
+  print(tabulate(b, headers='keys', tablefmt='psql'))
+  
+  # display the top performer
+  print("\n Top Performer:  \n")
+  for STAT in STATS:
+    c = a.loc[a[STAT] == (a[STAT].max())]
+  print(tabulate(c, headers='keys', tablefmt='psql'))
+
+
+
+
+  print("Would you like to search again?    (Y for yes)")
+  scout = input()
+  valid = False
+  while valid == False:
+    if scout.lower() == "y":
+      valid = True
+      Find_A_Player()
+      continue
+    else:
+      print(" 'Y' not detected, continuing... \n")
+      valid = True
+
+
+
+
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+import networkx as nx
+
+def dependency():
+    # Compute the correlation coefficients between pairs of variables
+    corr_matrix = data.corr()
+
+    # Create a heatmap of the correlation matrix
+    sns.heatmap(corr_matrix, cmap='coolwarm', annot=False, fmt='0.3f')
+    plt.title("Dependency values for the dataset, the darker the colour the more dependent the values are")
+    plt.show()
+
+    # Create a network graph of the correlation matrix
+    graph = nx.from_numpy_array(corr_matrix.values)
+    pos = nx.spring_layout(graph)
+    nx.draw_networkx_nodes(graph, pos, node_size=200)
+    nx.draw_networkx_labels(graph, pos, font_size=12, font_family='sans-serif')
+    nx.draw_networkx_edges(graph, pos, width=0.5)
+    plt.axis('on')
+    plt.show()
+    
+    
+    
+   
+
+
+
+
+def Compare_Age_To_Performance():
+
+  import pandas as pd
+  import matplotlib.pyplot as plt
+
+  print("""
+
+
+
+  We Will look at how a players stats change as they get older:
+
+
+  """)
+  # Select all rows where column A is greater than 2
+  condition = data['Age'] <20
+  u20 = data[condition]
+
+  condition = (data['Age'] >20) & (data['Age'] < 25)
+  u25 = data[condition]
+
+  condition = (data['Age'] >25) & (data['Age'] < 30)
+  u30 = data[condition]
+
+  condition = data['Age'] >30
+  a30 = data[condition]
+  # Calculate the column-wise averages
+  average1 = u20.mean()
+  average2 = u25.mean()
+
+  average3 = u30.mean()
+
+  average4 = a30.mean()
+  df_combined = pd.concat([average1, average2, average3, average4], axis=1)
+  headers = ['Under 20', 'Under 25', 'Under 30', 'Above 30',]
+  print("\n The avergaes of each stat in their respective age ranges \n")
+  # Print the concatenated dataframe using tabulate
+  print(tabulate(df_combined, headers=headers,tablefmt='psql'))
+  print("""
+
+  Analysis of the data above:
+
+  From the data we can see that when a player is between the ages of 25 and 30 they are the most likely to be played in a game aswell as playing the most minutes.
+  We can also see that older players are most likely to get the most game time as the players above 25 have the most minutes compared to the players
+  under 25.
+
+  A possible reason for this would be experience, a team is more likely to start more experienced players and only have one or two less experienced players
+  to ensure the quality of the team does not drop
+
+  However the Younger players have more shots on targets per game but the age range of 25-30 have the highest shot on target percentage which shows, the older players
+  have less shots per game but they are more accurate with their shots which linking back to the previous point shows their experience. Which also correlates to the amount
+  of goals the older players get due to their greater efficiency with each shot due to the average being in the range of 0.11-0.12, whereas the younger players (<25) have a goal range of 0.08-0.1.
+
+  On the other hand, the age range with the most assissts is the 20-24 age range meaning they are more liekly to be a team player and willing to pass the ball to get an assist. This
+  could be because around this age the player is working to become the best they can, but they are rarely the ebst in the squad at this age meaning their ego cannot be too high
+  allowing them to be open th play the ball to their team mate more often. We also see that the youngest player (<20) are the lowest on theasissts at a value of 0.047, a reason for 
+  this could be due to them trying to get into the first team resulting in them attempting to score goals rather than create them.
+
+  Comparing the tackling stats we see that the younger players (<25) have more tackles per game and a higher tackle win rate. But, the older players have a higher success rate when it comes
+  to tackling a player who is running directly at them, showing that the younger players are more likely to press a player and win the ball back but the older players are
+  more likely to successfully defend an attacker when they are dribbling towards the goal.
+
+  Building on this point the youngest age bracket has a higher tackles per game stat and a higher yellow cards per game stat which means they are more reckless with their tackles on average compared to
+  the older players. To support this point further the younger players have a higher red card per game stat which further supports the point of younger players being more reckless
+  and less efficient with their tackles.
+  """)
+  
+  
+  
+def Compare_League_To_Performance():
+  import pandas as pd
+  import matplotlib.pyplot as plt
+
+  # Select all rows where column Comp matches the given league
+  condition = data['Comp'] == "Ligue 1"
+  Ligue1 = data[condition]
+
+  condition = data['Comp'] == "Premier League"
+  Prem = data[condition]
+
+  condition = data['Comp'] == "Serie A"
+  SerieA = data[condition]
+
+  condition = data['Comp'] == "Bundesliga"
+  Bundesliga = data[condition]
+
+  condition = data['Comp'] == "La Liga"
+  LaLiga = data[condition]
+
+  # Calculate the column-wise averages for each league
+  average1 = Ligue1.mean()
+  average2 = Prem.mean()
+  average3 = SerieA.mean()
+  average4 = Bundesliga.mean()
+  average5 = LaLiga.mean()
+
+  # Combine the averages into a single dataframe
+  df_combined = pd.concat([average1, average2, average3, average4, average5], axis=1)
+
+  # Set the headers for the dataframe
+  headers = ['Ligue 1', 'Premier League', 'Serie A', 'Bundesliga', 'La Liga']
+
+  # Print a message to indicate what the dataframe shows
+  print("\n The averages of each stat in their respective age ranges \n")
+
+  # Print the concatenated dataframe using tabulate
+  print(tabulate(df_combined, headers=headers,tablefmt='psql'))
+
+  print("""
+  
+  The stats shown in the table can let us know the different playstyles of the league aswell as what type of players we are likely to find.
+
+  As shown in  the table the league with the highest goal stat is the bundesliga meaning their strikers and attacking players are most likely to score in a match. Alternatively this could be seen as teh defences being seen as the weakest out of the leagues.
+  So if a scout was looking for an attacker, the bundesliga would be a good place for them to look but not the best place to look for defenders when looking at the goals stat. A player who shows the accuracy of this is Robert Lewandowski who has been 
+  the top scorer for many years. Haaland is the newest young talen who has smashed multiple goal records as his time in germany and on his first season in england he broke the goal record with 6 games left in the league.
+
+  The premier league has the highest starts stat, which shows players in their starting lineups are consistent players. Which means, they would be able to adjust to a different league easier as they have had more consistent game time.
+  If a scout or manager from a different league needs a player to instantly start then looking at the premier league would be a good option.
+
+  Ligue 1 has the highest tkl stat which is how many tackles a game players perform. If a defender was needed by a club this league would be the best option as their players commit the most tackles per game.
+
+  
+  Analysing the different leagues is very important to scouts and clubs as they need to allocate their time efficiently so avoid a waste of resources, so seeing what leagues produce the most suitable type
+  of player is very important. For example through this alysis scouts would not waste their time looking for a defender in italy as they know the fernch league porduces the best defenders. Which has been showin in real life
+  with defender such as Thiago Silva, Fabinho and many more.
+  
+  
+  """)
+  
+  
+  
+  
+#USED
+def Compare_Player_To_Average():
+  import pandas as pd
+  from tabulate import tabulate
+
+  # user enters their name
+  name = str(input("Enter your players name: "))
+
+  CORRECT = False
+  # check if in dataframe
+  while not CORRECT:
+      if name in data.values:
+          CORRECT = True
+      else:
+          name = str(input("Name entered incorrectly! Enter your name: "))
+
+  # create a separate dataframe for the player
+  condition = data['Player'] == name
+  Player1 = data[condition]
+
+  # create a separate dataframe for the other players
+  pos = Player1.iloc[0][3]
+  condition = data['Pos'] == pos
+  Rest_Of_Players = data[condition]
+
+  # find average of the other players
+  Rest_Of_Players = Rest_Of_Players.mean()
+  Player1 = Player1.mean()
+
+  # calculate the difference between the second and third columns
+  diff = Player1 - Rest_Of_Players
+
+  # concatenate the dataframes and add the difference column
+  df_combined = pd.concat([Player1, Rest_Of_Players, diff], axis=1)
+  headers = ['Stats', name, 'Rest Of The World', 'Difference']
+
+  # print the concatenated dataframe using tabulate
+  print("\n The averages of each stat in their respective age ranges \n")
+  print(tabulate(df_combined, headers=headers, tablefmt='psql'))
+
+
+
+
+
+
+#USED
+
+def Compare_Team_To_League():
+  #user enters their name
+  name = str(input("Enter your teams name: "))
+
+  CORRECT = False
+  #check if in dataframe
+  while CORRECT == False:
+    if name in data.values:
+      CORRECT = True
+    else:
+      name = str(input("Name entered incorrectly! Enter your name: "))
+
+
+  #create a separate dataframe for the player
+
+  condition = data['Squad'] == name
+  Team1 = data[condition]
+
+  #create a separate dataframe for the other players
+  comp = Team1.iloc[0][5]
+  condition = data['Comp'] == comp
+  Rest_Of_World = data[condition]
+
+  #find average of the other World
+  World = Rest_Of_World.mean()
+  Team1 = Team1.mean()
+
+
+
+
+
+
+
+
+
+
+
+
+  diff = Team1 - World
+
+
+ 
+
+  # concatenate the dataframes and add the difference column
+  df_combined = pd.concat([Team1, World, diff], axis=1)
+  headers = ['Stats', name, 'Rest Of The League', 'Difference']
+
+  print("\n Your Team vs Rest Of League \n")
+  print(tabulate(df_combined, headers=headers, tablefmt='psql'))
+
+  print("""
+  
+  
+  
+  """)
+
+  print("Would you like to search for a player or players to help improve your squad in certain areas wiht our scouting system: (Y to continue, <ENTER> to skip)")
+  scout = input()
+  valid = False
+  while valid == False:
+    if scout.lower() == "y":
+      valid = True
+      Find_A_Player()
+      
+    else:
+      print("")
+      valid = True
+  
+
+  print("Would you like to return to the main menu?:  (Y for yes)")
+  scout = input()
+  valid = False
+  while valid == False:
+    if scout.lower() == "y":
+      valid = True
+      Ask_Choice()
+      
+    else:
+      print("")
+      valid = True
+  
+  
+
+
+def Compare_Teams():
+  #user enters their name
+  name = str(input("Enter your first teams name: "))
+
+  CORRECT = False
+  #check if in dataframe
+  while CORRECT == False:
+    if name in data.values:
+      CORRECT = True
+    else:
+      name = str(input("Name entered incorrectly! Enter your name: "))
+
+
+  #create a separate dataframe for the player
+
+  condition = data['Squad'] == name
+  Team1 = data[condition]
+
+
+
+  name1 = str(input("Enter your first teams name: "))
+
+  CORRECT = False
+  #check if in dataframe
+  while CORRECT == False:
+    if name1 in data.values:
+      CORRECT = True
+    else:
+      name1 = str(input("Name entered incorrectly! Enter your name: "))
+
+
+  #create a separate dataframe for the player
+
+  condition = data['Squad'] == name1
+  Team2 = data[condition]
+  #find average of the other World
+  Team2 = Team2.mean()
+  Team1 = Team1.mean()
+
+
+
+
+
+
+
+
+
+
+
+
+  diff = Team1 - Team2
+
+
+ 
+
+  # concatenate the dataframes and add the difference column
+  df_combined = pd.concat([Team1, Team2, diff], axis=1)
+  headers = ['Stats', name, name1, 'Difference']
+
+  print("\n Your Team vs Rest Of League \n")
+  print(tabulate(df_combined, headers=headers, tablefmt='psql'))
+
+  print("""
+  
+  
+  
+  """)
+
+  
+
+  print("Would you like to return to the main menu?:  (Y for yes)")
+  scout = input()
+  valid = False
+  while valid == False:
+    if scout.lower() == "y":
+      valid = True
+      Ask_Choice()
+      
+    else:
+      print("")
+      valid = True
+
+
+#USED
+
+def LR_Predict():
+  import pandas as pd
+  import matplotlib.pyplot as plt
+
+  
+
+  
+  # create a dataframe
+  feature=input("What is your first feature:")
+  feature1=input("What is your second feature:")
+  target=input("What is your target:")
+  df = data[[feature, feature1, target]].dropna()  # remove rows with missing values
+
+  # create a linear regression object
+  reg = LinearRegression()
+
+  # fit the model using the MP and Age columns to predict Goals
+  reg.fit(df[[feature, feature1]], df[target])
+
+  # predict the values of Goals based on new values of MP and Age
+  new_MP = float(input("Enter the player's {}: ".format(feature)))
+  new_Age = float(input("Enter the player's {}: ".format(feature1)))
+  predicted_Goals = reg.predict([[new_MP, new_Age]])[0]
+
+  # create scatter plot with MP and Age on the x-axis and Goals on the y-axis
+  fig, ax = plt.subplots(figsize=(8, 6))
+  scatter = ax.scatter(df[feature], df[feature1], c=df[target], cmap='viridis', s=30, alpha=0.7)
+
+  # add predicted value to the plot as a red star
+  ax.scatter(new_MP, new_Age, marker='*', s=200, c='r')
+
+  # set labels and title
+  ax.set_xlabel(feature)
+  ax.set_ylabel(target)
+  ax.set_title('Linear Regression with Predicted Value')
+
+  # add a colorbar
+  fig.colorbar(scatter, ax=ax)
+
+  # show predicted value as text on the plot
+  ax.text(df[feature].max(), df[feature1].min(), f'Predicted Taget: {predicted_Goals:.2f}', ha='right', va='bottom', fontsize=12)
+
+  plt.show()
+
+
+
+
+
+
+#USED
+
+def PCA():
+  import pandas as pd
+  from sklearn.decomposition import PCA
+  from sklearn.preprocessing import StandardScaler
+  from sklearn.linear_model import LinearRegression
+  # Load your dataset into a Pandas dataframe
+  df = data
+  df = df.dropna()
+  df = df.drop('Player', axis = 1)
+  df = df.drop('Nation', axis = 1)
+  df = df.drop('Pos', axis = 1)
+  df = df.drop('Comp', axis = 1)
+  df = df.drop('Squad', axis = 1)
+
+  # Separate the features and target variable
+
+  target = input("What is your target variable?: ")
+  feature = input("What is your feature variable?:  ")
+  X = df.drop(target, axis=1)
+  y = df[feature]
+
+  # Standardize the features using the StandardScaler from scikit-learn
+  scaler = StandardScaler()
+  X_scaled = scaler.fit_transform(X)
+
+  # Create a PCA object and fit it to the standardized data
+  pca = PCA(n_components=2)
+  pca.fit(X_scaled)
+
+  # Transform the data to its principal components
+  X_pca = pca.transform(X_scaled)
+
+  # Create a new dataframe with the principal components and target variable
+  df_pca = pd.DataFrame({'PC1': X_pca[:, 0], 'PC2': X_pca[:, 1], 'target': y})
+
+  # Visualize the results
+  import matplotlib.pyplot as plt
+  plt.scatter(df_pca['PC1'], df_pca['PC2'], c=df_pca['target'], s = 2.5)
+  plt.xlabel(target)
+  plt.ylabel(feature)
+  plt.show()
+
+  print("""
+
+
+  PCA (Principal Component Analysis) is a statistical technique used to reduce the dimensionality of a dataset while retaining as much of the original variation as possible. 
+  The basic idea behind PCA is to transform the original dataset into a new coordinate system that is aligned with the direction of maximum variation in the data.
+
+  PCA works by finding the principal components of the dataset, which are the directions in which the data varies the most. 
+  These principal components are orthogonal (i.e., perpendicular) to each other, and they form a new coordinate system for the data. 
+  The first principal component captures the direction of maximum variation in the data, the second principal component captures the direction of the next highest variation, and so on.
+
+  The principal components can be used to transform the original dataset into a lower-dimensional space that captures as much of the variation in the data as possible. 
+  This lower-dimensional representation can be useful for data visualization, feature extraction, and other applications.
+
+  In summary, PCA is a technique for reducing the dimensionality of a dataset by finding the directions of maximum variation in the data and 
+  projecting the data onto a lower-dimensional space defined by these directions.
+
+  """)
+
+def Use_Cases_Player():
+  print("""
+  As a professional player you want to be better than the rest of the competition.
+
+  To do this you need to know where you are faling behind or exceling compared to the rest of the world, which with this program you can!!
+
+  To do this the recomendation is to use the 'Compare Player' feature which provides the method you need
+
+
+  When you are ready press <ENTER>
+  
+  """
+  )
+
+
+  enter = input()
+
+  Compare_Player_To_Average()
+
+def Use_Cases_Manager():
+  print("""
+  As a manager you always need to understand the stregths and weknesses of your team, aswell as find players to fill the positions which are a weakness in the squad.
+
+  Additionally, if one of your players are not in the dataset you can predict their stats for the season by using our predictor function.
+
+
+  first we will run the team comparison with the oprion of the scouting method then we will give you the opportunity to run the predictor
+
+  When you are ready press <ENTER>
+  
+  """
+  )
+
+
+  enter = input()
+
+  Compare_Team_To_League()
+  
+
+  predict = input("\n would you like to use the predictor? Y for yes, <enter> or any key for no")
+
+  if predict.lower() == "y":
+    LR_Predict()
+  else:
+    print("")
+
+def Use_Cases_Scout():
+  print("""As a scout you need to be able to access the raw data of players aswell as compare them with the rest of the world in their position,
+  
+  furthermore you need to be able to predict how well they will do in the future
+  
+  another requirement is the ability to compare teams to decide where to go to find certain players
+  
+  
+  first we will run the function to see the raw data of a number of players:
+
+  then the ability to predictor model
+
+  then the team comparer
+
+  When you are ready press <ENTER>
+  """)
+
+  enter = input()
+
+
+  Player_Raw_Data()
+  print("\n Now we will run the predictor \n")
+  time.sleep(2)
+  LR_Predict()
+  print("\n Now we will run the team comparer \n")
+  time.sleep(2)
+  Compare_Teams()
+
+
+def Func_List():
+
+ 
+  print("""
+  
+  All the possible functions are:
+  
+  1:Graphs()
+  2:Player_Raw_Data()
+  3:ComparePlayers()
+  4:Find_A_Player()
+  5:Dependency()
+  6:Compare_Age_To_Performance()
+  7:Compare_League_To_Performance()
+  8:Compare_Player_To_Average()
+  9:Compare_Team_To_League()
+  10:Compare_Teams()
+  11:LR_Predict()
+  12:PCA()
+  """)
+
+
+
+  print("\n\n\n\n If you would like to run a function enter the corresponding number, if not press <ENTER> to return to main menu")
+  option = input()
+
+  choice = False
+
+  if option == "":
+    choice = True
+  else:
+    option = int(option)
+  
+  while choice == False:
+        try:
+            
+            if option in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]:
+                break
+                choice = True
+            else:
+                print("Invalid input. Please enter a number between 1 and 12.")
+                option = int(input())
+        except ValueError:
+            print("Invalid input. Please enter a number between 1 and 12.")
+            option = int(input())
+  if option == 1:
+    Graphs()
+
+  elif option == 2:
+    Player_Raw_Data()
+
+  elif option == 3:
+    ComparePlayers()
+
+  elif option == 4:
+    Find_A_Player()
+
+  elif option == 5:
+    dependency()
+
+  elif option == 6:
+    Compare_Age_To_Performance()
+
+  elif option == 7:
+    Compare_League_To_Performance()
+
+  elif option == 8:
+    Compare_Player_To_Average()
+
+  elif option == 9:
+    Compare_Team_To_League()
+
+  elif option == 10:
+    Compare_Teams()
+
+  elif option == 11:
+    LR_Predict()
+
+  elif option == 12:
+    PCA()
+
+  else:
+    Ask_Choice()
+  
+
+
+intro()
+Ask_Choice()
+
+again = True
+
+while again == True:
+  
+  restart = input("Would you like to go back to the main menu or quit?: (y for main menu, n for quit) ")
+
+
+  if restart.lower() == 'y' :
+    clear_output()
+    Ask_Choice()
+  else:
+    again = False
+    print("Thank you for using our program!")
+    quit()
+
+
